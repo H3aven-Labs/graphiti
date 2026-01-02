@@ -5,7 +5,7 @@ services:
       - "7474:7474" # HTTP
       - "7687:7687" # Bolt
     environment:
-      - NEO4J_AUTH=${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-demodemo}
+      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD}
       - NEO4J_server_memory_heap_initial__size=512m
       - NEO4J_server_memory_heap_max__size=1G
       - NEO4J_server_memory_pagecache_size=512m
@@ -27,9 +27,6 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.standalone
-    env_file:
-      - path: ../.env
-        required: false
     depends_on:
       neo4j:
         condition: service_healthy
@@ -42,6 +39,10 @@ services:
       # Application configuration
       - GRAPHITI_GROUP_ID=${GRAPHITI_GROUP_ID:-main}
       - SEMAPHORE_LIMIT=${SEMAPHORE_LIMIT:-10}
+      # LLM configuration (set in Portainer)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-gpt-4o-mini}
+      - EMBEDDING_MODEL_NAME=${EMBEDDING_MODEL_NAME:-text-embedding-3-small}
       - CONFIG_PATH=/app/mcp/config/config.yaml
       - PATH=/root/.local/bin:${PATH}
     volumes:
