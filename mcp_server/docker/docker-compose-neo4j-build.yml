@@ -68,7 +68,7 @@ services:
       - PATH=/root/.local/bin:${PATH}
     ports:
       - "8080:8000" # Expose the MCP server via HTTP transport
-    command: ["uv", "run", "main.py"]
+    command: ["uv", "run", "main.py", "--transport", "sse"]
 
 volumes:
   neo4j_data:
