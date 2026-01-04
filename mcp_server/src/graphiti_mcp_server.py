@@ -35,11 +35,16 @@ from services.factories import DatabaseDriverFactory, EmbedderFactory, LLMClient
 from services.queue_service import QueueService
 from utils.formatting import format_fact_result
 
-# --- EMERGENCY FIX FOR 421 ERROR ---
-import mcp.server.transport_security
-# This overrides the internal validator to allow any host (like graphiti-mcp)
-mcp.server.transport_security.TransportSecurity.is_host_authorized = lambda self, host: True
-# ------------------------------------
+# --- MONKEY PATCH TO FIX 421 ERROR ---
+try:
+    from mcp.server.transport_security import TransportSecurity
+    # Force the validator to always return True, bypassing the host check
+    TransportSecurity.is_host_authorized = lambda self, host: True
+    print("Successfully patched MCP TransportSecurity")
+except ImportError:
+    # If the import path is slightly different in your version
+    pass
+# -------------------------------------
 
 # Load .env file from mcp_server directory
 mcp_server_dir = Path(__file__).parent.parent
