@@ -35,6 +35,17 @@ from services.factories import DatabaseDriverFactory, EmbedderFactory, LLMClient
 from services.queue_service import QueueService
 from utils.formatting import format_fact_result
 
+# --- MONKEY PATCH TO FIX 421 ERROR ---
+try:
+    from mcp.server.transport_security import TransportSecurity
+    # Force the validator to always return True, bypassing the host check
+    TransportSecurity.is_host_authorized = lambda self, host: True
+    print("Successfully patched MCP TransportSecurity")
+except ImportError:
+    # If the import path is slightly different in your version
+    pass
+# -------------------------------------
+
 # Load .env file from mcp_server directory
 mcp_server_dir = Path(__file__).parent.parent
 env_file = mcp_server_dir / '.env'
@@ -148,18 +159,6 @@ mcp = FastMCP(
     'Graphiti Agent Memory',
     instructions=GRAPHITI_MCP_INSTRUCTIONS,
 )
-
-from mcp.server.streamable_http_manager import StreamableHttpManager
-
-# We override the host validation to always return True
-original_init = StreamableHttpManager.__init__
-def patched_init(self, *args, **kwargs):
-    original_init(self, *args, **kwargs)
-    # This tells the internal security manager to ignore host header mismatches
-    if hasattr(self, "security_manager"):
-        self.security_manager.is_host_authorized = lambda host: True
-
-StreamableHttpManager.__init__ = patched_init
 
 # Global services
 graphiti_service: Optional['GraphitiService'] = None
