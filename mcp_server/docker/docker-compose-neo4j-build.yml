@@ -72,7 +72,7 @@ services:
       - PATH=/root/.local/bin:${PATH}
     ports:
       - "8080:8000" # Expose the MCP server via HTTP transport
-    command: ["uv", "run", "main.py", "--host", "0.0.0.0", "--transport", "sse"]
+    command: ["uv", "run", "main.py", "--host", "0.0.0.0"]
     networks:
       - mcp_network
 volumes:
