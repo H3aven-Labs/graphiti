@@ -45,3 +45,7 @@ services:
 volumes:
   neo4j_data:
   neo4j_logs:
+
+networks:
+  mcp_network:
+    external: true
