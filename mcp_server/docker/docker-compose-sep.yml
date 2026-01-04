@@ -18,6 +18,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - mcp_network
 
   graphiti-mcp:
     image: zepai/knowledge-graph-mcp:latest
@@ -41,6 +43,8 @@ services:
     ports:
       - "8080:8000" # Expose the MCP server via HTTP for SSE transport
     command: ["uv", "run", "graphiti_mcp_server.py", "--transport", "sse"]
+    networks:
+      - mcp_network
 
 volumes:
   neo4j_data:
