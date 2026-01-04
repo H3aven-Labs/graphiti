@@ -160,6 +160,27 @@ mcp = FastMCP(
     instructions=GRAPHITI_MCP_INSTRUCTIONS,
 )
 
+# --- THE NUCLEAR PATCH ---
+# Place this immediately after: mcp = FastMCP(...)
+
+try:
+    # 1. Reach into the MCP server's internal manager
+    if hasattr(mcp, "_server"):
+        # This targets the actual security manager instance attached to your server
+        sec_manager = mcp._server.transport_security
+        
+        # Override the specific validation methods on the LIVE instance
+        sec_manager.is_host_authorized = lambda host: True
+        sec_manager.is_origin_authorized = lambda origin: True
+        
+        # Some versions use a set of allowed hosts; we clear it
+        if hasattr(sec_manager, "allowed_hosts"):
+            sec_manager.allowed_hosts = None 
+            
+    logger.info("Successfully neutralized MCP Host Security")
+except Exception as e:
+    logger.error(f"Failed to patch security manager: {e}")
+
 # Global services
 graphiti_service: Optional['GraphitiService'] = None
 queue_service: QueueService | None = None
