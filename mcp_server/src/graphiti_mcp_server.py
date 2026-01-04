@@ -149,6 +149,18 @@ mcp = FastMCP(
     instructions=GRAPHITI_MCP_INSTRUCTIONS,
 )
 
+from mcp.server.streamable_http_manager import StreamableHttpManager
+
+# We override the host validation to always return True
+original_init = StreamableHttpManager.__init__
+def patched_init(self, *args, **kwargs):
+    original_init(self, *args, **kwargs)
+    # This tells the internal security manager to ignore host header mismatches
+    if hasattr(self, "security_manager"):
+        self.security_manager.is_host_authorized = lambda host: True
+
+StreamableHttpManager.__init__ = patched_init
+
 # Global services
 graphiti_service: Optional['GraphitiService'] = None
 queue_service: QueueService | None = None
