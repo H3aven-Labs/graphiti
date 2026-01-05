@@ -42,7 +42,7 @@ services:
       - CONFIG_PATH=/app/mcp/config/config.yaml
       - PATH=/root/.local/bin:${PATH}
     volumes:
-      - ../config/config-docker-neo4j.yaml:/app/mcp/config/config.yaml:ro
+      - ./config-docker-neo4j.yaml:/app/mcp/config/config.yaml:ro
     ports:
       - "8080:8000" # Expose the MCP server via HTTP transport
     command: ["uv", "run", "main.py"]
